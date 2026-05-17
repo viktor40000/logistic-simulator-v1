@@ -76,18 +76,72 @@ class Drone:
             print(f"🚨 Критична ситуація! {self.name} застряг на позиції ({self.x}, {self.y}) з вантажем!")
 
 
-# --- Демонстрація роботи Кроку 3 ---
+# --- Інтерактивне меню керування симулятором ---
 if __name__ == "__main__":
-    # Створюємо систему
+    print("=== Ласкаво просимо до UAV Logistics Simulator! ===")
+    
+    # Створюємо стартові об'єкти
     drone = Drone(name="Птах-01", max_battery=100, max_capacity=5.0)
-    cargo = Package(weight=3.0, pickup=(1, 1), delivery=(4, 3))
+    # Початковий тестовий вантаж
+    cargo = Package(weight=3.0, pickup=(2, 2), delivery=(4, 5))
     
-    print("=== ЕТАП 1: Збір вантажу ===")
-    drone.pick_up_package(cargo)
-    print(drone.get_status())
-    
-    print("\n=== ЕТАП 2: Доставка ===")
-    drone.deliver_package()
-    
-    print("\n=== ЕТАП 3: Фінальний статус ===")
-    print(drone.get_status())
+    while True:
+        print("\n" + "="*30)
+        print("ДОСТУПНІ КОМАНДИ:")
+        print("1. Перевірити статус системи")
+        print("2. Відправити дрон забрати вантаж")
+        print("3. Наказати дрону доставити вантаж")
+        print("4. Зарядити дрон (на поточній позиції)")
+        print("5. Створити новий вантаж")
+        print("0. Вийти з симулятора")
+        print("="*30)
+        
+        choice = input("Введіть номер команди: ").strip()
+        
+        if choice == "1":
+            print("\n--- СТАТУС СИСТЕМИ ---")
+            print(drone.get_status())
+            if cargo:
+                print(cargo.get_info())
+            else:
+                print("Нових вантажів на складі немає.")
+                
+        elif choice == "2":
+            if not cargo:
+                print("❌ Помилка: Спочатку створіть вантаж (Команда 5).")
+            else:
+                print("\n--- ЗБІР ВАНТАЖУ ---")
+                drone.pick_up_package(cargo)
+                
+        elif choice == "3":
+            print("\n--- ДОСТАВКА ВАНТАЖУ ---")
+            drone.deliver_package()
+            # Якщо доставка успішна, видаляємо виконане замовлення з пам'яті меню
+            if drone.payload is None and cargo and cargo.status == "Доставлено":
+                cargo = None 
+                
+        elif choice == "4":
+            print("\n--- ЗАРЯДКА ---")
+            drone.battery = drone.max_battery
+            print(f"🔋 {drone.name} повністю заряджено на позиції ({drone.x}, {self.y if hasattr(drone, 'y') else drone.y})!")
+            
+        elif choice == "5":
+            print("\n--- СТВОРЕННЯ НОВОГО ВАНТАЖУ ---")
+            try:
+                w = float(input("Вага вантажу (кг): "))
+                p_x = int(input("Точка збору X: "))
+                p_y = int(input("Точка збору Y: "))
+                d_x = int(input("Точка доставки X: "))
+                d_y = int(input("Точка доставки Y: "))
+                
+                cargo = Package(weight=w, pickup=(p_x, p_y), delivery=(d_x, d_y))
+                print("✅ Новий вантаж успішно зареєстровано в системі!")
+            except ValueError:
+                print("❌ Помилка: Вводьте лише числа!")
+                
+        elif choice == "0":
+            print("\nДякуємо за використання симулятора. Роботу завершено!")
+            break
+            
+        else:
+            print("❌ Некоректний вибір. Спробуйте ще раз.")

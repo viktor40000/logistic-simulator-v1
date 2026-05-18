@@ -6,7 +6,7 @@ class Package:
         self.status = "Очікує на складі"
 
     def get_info(self) -> str:
-        return f"Вантаж {self.weight}кг | Старт: {self.pickup} -> Фініш: {self.delivery} | Статус: {self.status}"
+        return f"Вантаж {self.weight}кг | Старт: {self.pickup} -> Фініш: {self.delivery} | Status: {self.status}"
 
 
 class Drone:
@@ -56,7 +56,6 @@ class Drone:
         print(f"📦 Вантаж успішно завантажено на {self.name}!")
 
     def deliver_package(self):
-        """Доставка вантажу в точку призначення."""
         if self.payload is None:
             print("❌ Помилка: На борту немає вантажу для доставки!")
             return
@@ -64,25 +63,17 @@ class Drone:
         target = self.payload.delivery
         print(f"🚀 {self.name} прямує до точки фінішу {target}...")
         
-        # Намагаємося летіти до точки доставки
         if self.move(target[0], target[1]):
-            # Якщо долетіли успішно
             self.payload.status = "Доставлено"
-            print(f"  Вантаж успішно доставлено в точку {target}!")
-            
-            # Обнуляємо вантаж на борту (розвантаження)
+            print(f"🎉 Вантаж успішно доставлено в точку {target}!")
             self.payload = None
         else:
-            print(f"🚨 Критична ситуація! {self.name} застряг на позиції ({self.x}, {self.y}) з вантажем!")
+            print(f"🚨 Критична ситуація! {self.name} застряг на позиції ({self.x}, {self.y})!")
 
 
-# --- Інтерактивне меню керування симулятором ---
 if __name__ == "__main__":
     print("=== Ласкаво просимо до UAV Logistics Simulator! ===")
-    
-    # Створюємо стартові об'єкти
     drone = Drone(name="Птах-01", max_battery=100, max_capacity=5.0)
-    # Початковий тестовий вантаж
     cargo = Package(weight=3.0, pickup=(2, 2), delivery=(4, 5))
     
     while True:
@@ -116,14 +107,14 @@ if __name__ == "__main__":
         elif choice == "3":
             print("\n--- ДОСТАВКА ВАНТАЖУ ---")
             drone.deliver_package()
-            # Якщо доставка успішна, видаляємо виконане замовлення з пам'яті меню
             if drone.payload is None and cargo and cargo.status == "Доставлено":
                 cargo = None 
                 
         elif choice == "4":
             print("\n--- ЗАРЯДКА ---")
             drone.battery = drone.max_battery
-            print(f"🔋 {drone.name} повністю заряджено на позиції ({drone.x}, {self.y if hasattr(drone, 'y') else drone.y})!")
+            # БАГ ВИПРАВЛЕНО: Тепер тут чистий виклик координати об'єкта drone.y
+            print(f"🔋 {drone.name} повністю заряджено на позиції ({drone.x}, {drone.y})!")
             
         elif choice == "5":
             print("\n--- СТВОРЕННЯ НОВОГО ВАНТАЖУ ---")
@@ -142,6 +133,5 @@ if __name__ == "__main__":
         elif choice == "0":
             print("\nДякуємо за використання симулятора. Роботу завершено!")
             break
-            
         else:
             print("❌ Некоректний вибір. Спробуйте ще раз.")
